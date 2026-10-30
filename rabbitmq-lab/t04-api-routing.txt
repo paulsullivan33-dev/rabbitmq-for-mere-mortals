@@ -1,0 +1,45 @@
+$ PUT /exchanges/printshop/tickets  {"type":"direct","durable":true}
+ -> HTTP 201
+$ PUT /exchanges/printshop/announce  {"type":"fanout","durable":true}
+ -> HTTP 201
+$ PUT /queues/printshop/press-a, /queues/printshop/press-b, /queues/printshop/counter  {"durable":true}
+ press-a -> HTTP 201
+ press-b -> HTTP 201
+ counter -> HTTP 201
+$ POST bindings: tickets -urgent-> press-a ; tickets -info-> counter ; announce -> press-a ; announce -> press-b
+ b1 -> HTTP 201
+ b2 -> HTTP 201
+ b3 -> HTTP 201
+ b4 -> HTTP 201
+
+$ POST /exchanges/printshop/tickets/publish {"routing_key":"urgent","payload":"JOB 1042 | posters x200 | due Friday","payload_encoding":"string","properties":{"delivery_mode":2}}
+{"routed":true}
+$ POST /exchanges/printshop/tickets/publish {"routing_key":"info", ... "JOB 1043 | counter cards x500"}
+{"routed":true}
+$ POST /exchanges/printshop/announce/publish {"payload":"SHOP NOTICE | press 2 down for cleaning at 18:00"}
+{"routed":true}
+
+$ GET queue depths (messages ready) after the three publishes
+press-a: {"messages":0,"messages_ready":0}
+press-b: {"messages":0,"messages_ready":0}
+counter: {"messages":0,"messages_ready":0}
+
+$ POST /queues/printshop/press-a/get  (take the urgent job out)
+{"payload":"JOB 1042 | posters x200 | due Friday","exchange":"tickets","routing_key":"urgent","delivery_mode":2,"redelivered":false}
+$ POST /queues/printshop/press-a/get  (the fanout notice is next in this queue)
+{"payload":"SHOP NOTICE | press 2 down for cleaning at 18:00","exchange":"announce","routing_key":""}
+$ POST /queues/printshop/press-b/get  (fanout copy)
+{"payload":"SHOP NOTICE | press 2 down for cleaning at 18:00","exchange":"announce"}
+$ POST /queues/printshop/counter/get  (the info job)
+{"payload":"JOB 1043 | counter cards x500","exchange":"tickets","routing_key":"info"}
+
+$ GET queue depths again (all drained)
+press-a: {"messages":0}
+press-b: {"messages":0}
+counter: {"messages":0}
+
+$ (addendum) publish one more info job, wait 6 s, then read the depth again
+{"routed":true}
+counter after 6 s: {"messages":1,"messages_ready":1}
+$ and take it out again
+{"payload":"JOB 1044 | envelopes x1000"}

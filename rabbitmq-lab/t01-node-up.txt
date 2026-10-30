@@ -1,0 +1,114 @@
+$ cat $RABBITMQ_ENABLED_PLUGINS_FILE
+[rabbitmq_management].
+
+$ rabbitmq-server -detached
+
+$ for i in $(seq 1 30); do rabbitmqctl await_startup 2>/dev/null && break; sleep 2; done
+Still booting, will check again in 10 seconds...
+Still booting, will check again in 10 seconds...
+
+$ rabbitmqctl status
+Status of node rabbit@localhost ...
+Runtime
+
+OS PID: 67737
+OS: Linux
+Uptime (seconds): 20
+Is under maintenance?: false
+RabbitMQ version: 3.12.1
+RabbitMQ release series support status: supported
+Node name: rabbit@localhost
+Erlang configuration: Erlang/OTP 25 [erts-13.2.2.5] [source] [64-bit] [smp:2:2] [ds:2:2:10] [async-threads:1] [jit:ns]
+Crypto library: OpenSSL 3.0.13 30 Jan 2024
+Erlang processes: 364 used, 1048576 limit
+Scheduler run queue: 1
+Cluster heartbeat timeout (net_ticktime): 60
+
+Plugins
+
+Enabled plugin file: /home/hatch/workspace/rabbitmq-labwork/base/enabled_plugins
+Enabled plugins:
+
+ * rabbitmq_management
+ * amqp_client
+ * rabbitmq_web_dispatch
+ * cowboy
+ * cowlib
+ * rabbitmq_management_agent
+
+Data directory
+
+Node data directory: /home/hatch/workspace/rabbitmq-labwork/base/mnesia/rabbit@localhost
+Raft data directory: /home/hatch/workspace/rabbitmq-labwork/base/mnesia/rabbit@localhost/quorum/rabbit@localhost
+
+Config files
+
+ * /home/hatch/workspace/rabbitmq-labwork/rabbitmq.conf
+
+Log file(s)
+
+ * /home/hatch/workspace/rabbitmq-labwork/base/log/rabbit@localhost.log
+ * <stdout>
+
+Alarms
+
+(none)
+
+Memory
+
+Total memory used: 0.172 gb
+Calculation strategy: rss
+Memory high watermark setting: 0.4 of available memory, computed to: 0.4295 gb
+
+reserved_unallocated: 0.1171 gb (68.09 %)
+code: 0.0356 gb (20.67 %)
+other_proc: 0.0207 gb (12.02 %)
+other_system: 0.0144 gb (8.36 %)
+other_ets: 0.004 gb (2.32 %)
+atom: 0.0014 gb (0.83 %)
+metrics: 0.0006 gb (0.33 %)
+plugins: 0.0005 gb (0.26 %)
+binary: 0.0002 gb (0.1 %)
+msg_index: 0.0001 gb (0.07 %)
+mgmt_db: 0.0001 gb (0.07 %)
+mnesia: 0.0001 gb (0.04 %)
+quorum_ets: 0.0 gb (0.01 %)
+connection_other: 0.0 gb (0.0 %)
+quorum_queue_dlx_procs: 0.0 gb (0.0 %)
+quorum_queue_procs: 0.0 gb (0.0 %)
+stream_queue_procs: 0.0 gb (0.0 %)
+stream_queue_replica_reader_procs: 0.0 gb (0.0 %)
+allocated_unused: 0.0 gb (0.0 %)
+connection_channels: 0.0 gb (0.0 %)
+connection_readers: 0.0 gb (0.0 %)
+connection_writers: 0.0 gb (0.0 %)
+queue_procs: 0.0 gb (0.0 %)
+queue_slave_procs: 0.0 gb (0.0 %)
+stream_queue_coordinator_procs: 0.0 gb (0.0 %)
+
+File Descriptors
+
+Total: 2, limit: 3999
+Sockets: 0, limit: 3597
+
+Free Disk Space
+
+Low free disk space watermark: 0.05 gb
+Free disk space: 179.295 gb
+
+Totals
+
+Connection count: 0
+Queue count: 0
+Virtual host count: 1
+
+Listeners
+
+Interface: 127.0.0.1, port: 15672, protocol: http, purpose: HTTP API
+Interface: [::], port: 25672, protocol: clustering, purpose: inter-node and CLI tool communication
+Interface: [::], port: 5672, protocol: amqp, purpose: AMQP 0-9-1 and AMQP 1.0
+
+$ ss -tlnp | grep -E "5672|15672"     (AMQP and management listeners)
+LISTEN 0      0          127.0.0.1:15672      0.0.0.0:*    users:(("beam.smp",pid=67737,fd=36))      
+LISTEN 0      0            0.0.0.0:25672      0.0.0.0:*    users:(("beam.smp",pid=67737,fd=17))      
+LISTEN 0      0                  *:5672             *:*    users:(("beam.smp",pid=67737,fd=37))      

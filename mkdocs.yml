@@ -1,0 +1,29 @@
+site_name: RabbitMQ for Mere Mortals
+site_description: A message broker you run yourself. Producers, exchanges, queues and consumers in plain terms, job tickets routed and worked on for real, a worker killed mid-job to prove the work survives, and a restart to prove the messages do, with the limits stated plainly.
+site_url: https://paulsullivan33-dev.github.io/rabbitmq-for-mere-mortals/
+copyright: 'Part of <a href="https://paulsullivan33-dev.github.io/mere-mortals/">For Mere Mortals</a> · Text <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code MIT'
+
+# Guides live at the repo root (nice for GitHub browsing).
+# The deploy workflow copies them into docs/ before building.
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - What RabbitMQ Is: what-rabbitmq-is.md
+  - The Moving Parts: the-moving-parts.md
+  - Installing RabbitMQ: installing-rabbitmq.md
+  - First Checks: first-checks.md
+  - Your First Message: your-first-message.md
+  - Exchanges and Routing: exchanges-and-routing.md
+  - Work Queues: work-queues.md
+  - Acknowledgements and Not Losing Work: acknowledgements.md
+  - The Management API and UI: the-management-api.md
+  - Users and Permissions: users-and-permissions.md
+  - Persistence and Restarts: persistence-and-restarts.md
+  - Recipes: recipes.md
+  - The Neighbours: the-neighbours.md
+  - Limits: limits.md
+  - Troubleshooting: troubleshooting.md
+  - Glossary: glossary.md
+  - Writing Criteria: criteria.md

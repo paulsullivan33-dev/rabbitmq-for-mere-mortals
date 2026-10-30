@@ -1,0 +1,10 @@
+$ rabbitmqctl stop
+Stopping and halting node rabbit@localhost ...
+
+$ ps aux | grep beam.smp | grep -v grep | wc -l    (beam processes left)
+0
+$ ss -tlnp | grep -E "5672|15672" | wc -l    (lab listeners left)
+0
+
+$ du -sh base    (the node estate, left in rabbitmq-labwork for re-verification)
+312K	/home/hatch/workspace/rabbitmq-labwork/base

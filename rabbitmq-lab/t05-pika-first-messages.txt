@@ -1,0 +1,25 @@
+$ python -c 'import pika; print(pika.__version__)'    (venv in rabbitmq-labwork)
+pika 1.4.4
+
+$ python send.py
+sent: JOB 1050 | leaflets x300 | due Monday
+
+$ python receive.py
+received: JOB 1050 | leaflets x300 | due Monday (redelivered=False)
+acknowledged
+
+$ python receive.py    (again: nothing left)
+queue empty
+
+$ python guest_refused.py 198.19.0.2    (guest through the non-loopback address)
+refused: AMQPConnectorStackTimeout: Timeout during AMQP handshake'198.19.0.2'/(<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_STREAM: 1>, 6, '', ('198.19.0.2', 5672)); ssl=False
+
+$ grep 'guest' base/log/rabbit@localhost.log | tail -2    (what the broker wrote at that moment)
+2026-10-30 13:20:29.944838+00:00 [info] <0.230.0> Successfully set user tags for user 'guest' to [administrator]
+2026-10-30 13:20:29.971806+00:00 [info] <0.230.0> Successfully set permissions for user 'guest' in virtual host '/' to '.*', '.*', '.*'
+
+$ rabbitmqctl eval "application:get_env(rabbit, loopback_users)."
+{ok,[<<"guest">>]}
+
+$ python guest_refused.py 127.0.0.1    (same guest, same script, loopback address)
+CONNECTED - the refusal did not happen

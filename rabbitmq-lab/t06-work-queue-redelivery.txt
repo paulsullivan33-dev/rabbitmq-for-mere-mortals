@@ -1,0 +1,22 @@
+$ python new_task.py "JOB 2001 | banners x12 ........" "JOB 2002 | stickers x50 ." "JOB 2003 | posters x20 .."    (one dot = one second of work)
+queued: JOB 2001 | banners x12 ........
+queued: JOB 2002 | stickers x50 .
+queued: JOB 2003 | posters x20 ..
+
+$ python worker.py W1 &  (started in the background)
+$ sleep 3; cat w1.log    (W1 is three seconds into the eight-second job)
+[W1] waiting for tasks
+[W1] received: JOB 2001 | banners x12 ........ (redelivered=False)
+$ kill -9 82039    (the worker dies mid-task, no ack sent)
+/bin/bash: line 18: 82039 Killed                  $PY $L/worker.py W1 > $W/w1.log 2>&1
+
+$ timeout 20 python worker.py W2    (a second worker takes over)
+[W2] waiting for tasks
+[W2] received: JOB 2001 | banners x12 ........ (redelivered=True)
+[W2] done: JOB 2001
+[W2] received: JOB 2002 | stickers x50 . (redelivered=False)
+[W2] done: JOB 2002
+[W2] received: JOB 2003 | posters x20 .. (redelivered=False)
+[W2] done: JOB 2003
+
+$ (W2 log, in full — timeout stopped it while it waited for more work)

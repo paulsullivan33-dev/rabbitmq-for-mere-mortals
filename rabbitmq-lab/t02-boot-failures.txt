@@ -1,0 +1,23 @@
+Two genuine failures from the lab's first boot attempts, kept verbatim.
+1) rabbitmqctl run before the node had finished its first boot:
+
+$ rabbitmqctl await_startup
+Error: unable to perform an operation on node 'rabbit@localhost'. Please see diagnostics information and suggestions below.
+
+attempted to contact: [rabbit@localhost]
+
+rabbit@localhost:
+  * connected to epmd (port 4369) on localhost
+--
+attempted to contact: [rabbit@localhost]
+
+rabbit@localhost:
+
+   ... (full diagnostics block elided here; the one-line summary the CLI leads with:)
+Error: unable to perform an operation on node 'rabbit@localhost'. Please see diagnostics information and suggestions below.
+
+2) A second rabbitmq-server started while the first was already up:
+
+BOOT FAILED
+ERROR: could not bind to distribution port 25672, it is in use by another node: rabbit@localhost
+reason: {dist_port_already_used,25672,"rabbit","localhost"}

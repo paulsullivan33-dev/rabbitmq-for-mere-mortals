@@ -1,0 +1,52 @@
+$ rabbitmqctl add_vhost printshop
+Adding vhost "printshop" ...
+
+$ rabbitmqctl add_user pressop presspass
+Adding user "pressop" ...
+Done. Don't forget to grant the user permissions to some virtual hosts! See 'rabbitmqctl help set_permissions' to learn more.
+
+$ rabbitmqctl set_permissions -p printshop pressop ".*" ".*" ".*"
+Setting permissions for user "pressop" in vhost "printshop" ...
+
+$ rabbitmqctl list_vhosts name
+Listing vhosts ...
+name
+/
+printshop
+
+$ rabbitmqctl list_users
+Listing users ...
+user	tags
+guest	[administrator]
+pressop	[]
+
+$ rabbitmqctl list_permissions -p printshop
+Listing permissions for vhost "printshop" ...
+user	configure	write	read
+pressop	.*	.*	.*
+
+$ curl -s -u pressop:presspass http://127.0.0.1:15672/api/whoami
+{"error":"not_authorised","reason":"Not management user"}
+
+$ curl -s -u pressop:wrongpass http://127.0.0.1:15672/api/whoami   (wrong password)
+{"error":"not_authorized","reason":"Not_Authorized"}
+HTTP 401
+
+$ curl -s -u guest:guest http://198.19.0.2:15672/api/whoami   (guest via the machine's non-loopback address 198.19.0.2)
+
+HTTP 000
+
+$ curl -s -u guest:guest http://127.0.0.1:15672/api/whoami   (same guest, via loopback)
+{"name":"guest","tags":["administrator"]}
+
+$ rabbitmqctl set_user_tags pressop management
+Setting tags for user "pressop" to [management] ...
+
+$ curl -s -u pressop:presspass http://127.0.0.1:15672/api/whoami   (after the tag)
+{"name":"pressop","tags":["management"]}
+
+$ curl -s -u pressop:presspass http://127.0.0.1:15672/api/vhosts/printshop   (its own vhost)
+{"error":"not_authorised","reason":"Not administrator user"}
+
+$ curl -s -u pressop:presspass "http://127.0.0.1:15672/api/queues/%2F"   (the default vhost it has no rights in)
+{"error":"not_authorised","reason":"User not authorised to access virtual host"}

@@ -1,0 +1,23 @@
+$ apt-get -o Dir::State::Lists=$LAB/apt/lists -o Dir::Cache=$LAB/apt/cache install --download-only --no-install-recommends -y rabbitmq-server    (LAB=/home/hatch/workspace/rabbitmq-labwork; lab-private apt state, nothing installed system-wide)
+0 upgraded, 18 newly installed, 0 to remove and 5 not upgraded.
+Need to get 0 B/36.1 MB of archives.
+After this operation, 56.4 MB of additional disk space will be used.
+Download complete and in download only mode
+
+$ ls apt/cache/archives/*.deb | wc -l; du -sh apt/cache/archives
+18
+35M	apt/cache/archives
+
+$ for d in apt/cache/archives/*.deb; do dpkg -x "$d" root/; done; du -sh root
+58M	root
+
+$ apt-cache policy rabbitmq-server erlang-base (from the lab lists)
+rabbitmq-server:
+  Installed: (none)
+--
+erlang-base:
+  Installed: (none)
+
+$ erl -version ; erl -noshell -eval "io:format(\"~s~n\",[erlang:system_info(otp_release)]), halt()."    (via the lab erl shim; Debian erl hardcodes /usr/lib/erlang, erlexec honours ROOTDIR/BINDIR)
+Erlang (SMP,ASYNC_THREADS) (BEAM) emulator version 13.2.2.5
+25

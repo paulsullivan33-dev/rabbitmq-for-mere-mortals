@@ -1,0 +1,42 @@
+$ rabbitmqctl list_exchanges -p printshop name type durable
+name	type	durable
+amq.headers	headers	true
+amq.direct	direct	true
+amq.fanout	fanout	true
+	direct	true
+announce	fanout	true
+amq.rabbitmq.trace	topic	true
+tickets	direct	true
+amq.topic	topic	true
+amq.match	headers	true
+
+$ rabbitmqctl list_bindings -p printshop source_name destination_name routing_key
+source_name	destination_name	routing_key
+	task_queue	task_queue
+	intake	intake
+	press-b	press-b
+	counter	counter
+	archive	archive
+	press-a	press-a
+announce	press-a	
+announce	press-b	
+tickets	counter	info
+tickets	press-a	urgent
+
+$ rabbitmq-diagnostics -q ping
+Ping succeeded
+exit: 0
+
+$ rabbitmq-diagnostics check_running
+Checking if RabbitMQ is running on node rabbit@localhost ...
+RabbitMQ on node rabbit@localhost is fully booted and running
+
+$ rabbitmqctl report (first lines only)
+Reporting server status of node rabbit@localhost ...
+
+Status of node rabbit@localhost ...
+[1mRuntime[0m
+
+OS PID: 82215
+OS: Linux
+Uptime (seconds): 35

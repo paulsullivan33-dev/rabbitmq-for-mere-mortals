@@ -1,0 +1,27 @@
+$ PUT /queues/printshop/archive {"durable":true}
+ -> HTTP 201
+$ publish persistent (delivery_mode 2): "JOB 3001 | bound proofs x40 | keep until collected" via default exchange
+{"routed":true}
+$ publish NON-persistent (delivery_mode 1) control: "JOB 3002 | scrap paper note"
+{"routed":true}
+$ archive depth before restart: {"messages":2}
+
+$ rabbitmqctl stop
+Stopping and halting node rabbit@localhost ...
+$ rabbitmq-server -detached; await startup
+Still booting, will check again in 10 seconds...
+Still booting, will check again in 10 seconds...
+
+$ rabbitmqctl list_queues -p printshop name durable messages
+Timeout: 60.0 seconds ...
+Listing queues for vhost printshop ...
+name	durable	messages
+task_queue	true	0
+intake	true	0
+press-b	true	0
+counter	true	0
+archive	true	1
+press-a	true	0
+
+$ POST /queues/printshop/archive/get count=5 (everything that survived)
+{"payload":"JOB 3001 | bound proofs x40 | keep until collected","delivery_mode":2,"redelivered":false}
